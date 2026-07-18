@@ -3,6 +3,7 @@ const sequelize = require("./config/database");
 const eventRoutes = require("./routes/eventRoutes");
 const attendeeRoutes = require("./routes/attendeeRoutes");
 const errorHandler = require("./middleware/errorHandler");
+require("./models/Associations");
 
 const app = express();
 const PORT = 3000;
