@@ -59,8 +59,6 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
-// POST /events/:id/register
-// Purpose: register an attendee to a specific event
 router.post("/:id/register", async (req, res, next) => {
   try {
     const event = await Event.findByPk(req.params.id);
@@ -68,15 +66,11 @@ router.post("/:id/register", async (req, res, next) => {
       return res.status(404).json({ error: "Event not found" });
     }
 
-    // req.body.attendeeId — the id of the attendee we want to register
     const attendee = await Attendee.findByPk(req.body.attendeeId);
     if (!attendee) {
       return res.status(404).json({ error: "Attendee not found" });
     }
 
-    // .addAttendee() is a special method Sequelize auto-generates
-    // because of the belongsToMany association — it inserts a row
-    // into the EventAttendees join table linking this event + attendee.
     await event.addAttendee(attendee);
 
     res.status(201).json({ message: "Attendee registered to event" });
@@ -85,17 +79,12 @@ router.post("/:id/register", async (req, res, next) => {
   }
 });
 
-// GET /events/:id/attendees
-// Purpose: list all attendees registered for a specific event
 router.get("/:id/attendees", async (req, res, next) => {
   try {
     const event = await Event.findByPk(req.params.id);
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
     }
-
-    // .getAttendees() — another auto-generated method, fetches
-    // all attendees linked to this event via the join table.
     const attendees = await event.getAttendees();
     res.json(attendees);
   } catch (error) {

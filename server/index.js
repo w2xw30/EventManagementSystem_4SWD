@@ -1,16 +1,22 @@
+require("dotenv").config();
+
 const express = require("express");
 const sequelize = require("./config/database");
 const eventRoutes = require("./routes/eventRoutes");
 const attendeeRoutes = require("./routes/attendeeRoutes");
+const authRoutes = require("./routes/authRoutes");
 const errorHandler = require("./middleware/errorHandler");
-require("./models/Associations");
+const authMiddleware = require("./middleware/authMiddleware");
+require("./models/associations");
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.use("/events", eventRoutes);
-app.use("/attendees", attendeeRoutes);
+
+app.use("/auth", authRoutes);
+app.use("/events", authMiddleware, eventRoutes);
+app.use("/attendees", authMiddleware, attendeeRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running");
