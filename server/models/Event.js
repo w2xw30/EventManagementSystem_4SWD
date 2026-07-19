@@ -5,6 +5,9 @@ const Event = sequelize.define("Event", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   description: {
     type: DataTypes.TEXT,
@@ -13,14 +16,23 @@ const Event = sequelize.define("Event", {
   date: {
     type: DataTypes.DATEONLY,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   time: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   location: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
 });
 

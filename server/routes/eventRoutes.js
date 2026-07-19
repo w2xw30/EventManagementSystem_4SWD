@@ -2,10 +2,14 @@ const express = require("express");
 const router = express.Router();
 const Event = require("../models/Event");
 const Attendee = require("../models/Attendee");
+const { Op } = require("sequelize");
 
 router.get("/", async (req, res, next) => {
   try {
-    const events = await Event.findAll();
+    const { search } = req.query;
+    const whereClause = search ? { name: { [Op.like]: `%${search}%` } } : {};
+
+    const events = await Event.findAll({ where: whereClause });
     res.json(events);
   } catch (error) {
     next(error);

@@ -5,6 +5,9 @@ const Attendee = sequelize.define("Attendee", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   email: {
     type: DataTypes.STRING,
@@ -17,6 +20,9 @@ const Attendee = sequelize.define("Attendee", {
   phoneNumber: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
 });
 
