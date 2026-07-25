@@ -1,0 +1,36 @@
+.sidebar {
+  width: 30%;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  color: #1e1e2f;
+  padding: 20px;
+  box-sizing: border-box;
+  border-right: 1px solid #e0e0e0;
+}
+
+.sidebar-title {
+  margin-bottom: 30px;
+  font-size: 20px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-link {
+  color: #444;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.sidebar-link:hover {
+  background-color: #eeeeee;
+}
+
+.sidebar-link.active {
+  background-color: #4f46e5;
+  color: white;
+}

@@ -1,0 +1,10 @@
+.layout {
+  display: flex;
+}
+
+.content {
+  width: 70%;
+  padding: 30px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
