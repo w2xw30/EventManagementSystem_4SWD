@@ -70,6 +70,8 @@ function EventList() {
                   <td>{event.location}</td>
                   <td>
                     <Link to={`/events/${event.id}`}>View</Link>
+                    {" | "}
+                    <Link to={`/events/${event.id}/edit`}>Edit</Link>
                   </td>
                 </tr>
               ))

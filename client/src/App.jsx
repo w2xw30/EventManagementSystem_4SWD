@@ -3,6 +3,7 @@ import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import EventList from "./pages/EventList";
 import AttendeeList from "./pages/AttendeeList";
+import EventForm from "./pages/EventForm";
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
                 <Route path="/" element={<Navigate to="/events" />} />
                 <Route path="/events" element={<EventList />} />
                 <Route path="/attendees" element={<AttendeeList />} />
+                <Route path="/events/new" element={<EventForm />} />
+                <Route path="/events/:id/edit" element={<EventForm />} />
               </Routes>
             </Layout>
           }
