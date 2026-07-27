@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import EventList from "./pages/EventList";
 import AttendeeList from "./pages/AttendeeList";
 import EventForm from "./pages/EventForm";
+import ViewEvent from "./pages/ViewEvent";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/attendees" element={<AttendeeList />} />
                 <Route path="/events/new" element={<EventForm />} />
                 <Route path="/events/:id/edit" element={<EventForm />} />
+                <Route path="/events/:id" element={<ViewEvent />} />
               </Routes>
             </Layout>
           }

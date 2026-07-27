@@ -1,0 +1,55 @@
+.view-event-page {
+  max-width: 700px;
+}
+
+.view-event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-secondary {
+  border: 1px solid #4f46e5;
+  color: #4f46e5;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.btn-secondary:hover {
+  background-color: #f0f0ff;
+}
+
+.event-details p {
+  margin: 8px 0;
+  color: #333;
+}
+
+.event-details strong {
+  color: #666;
+}
+
+.attendee-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.attendee-table th,
+.attendee-table td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.attendee-table th {
+  color: #888;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.error-text {
+  color: #b91c1c;
+}
