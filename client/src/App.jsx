@@ -6,6 +6,7 @@ import AttendeeList from "./pages/AttendeeList";
 import EventForm from "./pages/EventForm";
 import ViewEvent from "./pages/ViewEvent";
 import AttendeeForm from "./pages/AttendeeForm";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -15,18 +16,23 @@ function App() {
         <Route
           path="/*"
           element={
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Navigate to="/events" />} />
-                <Route path="/events" element={<EventList />} />
-                <Route path="/attendees" element={<AttendeeList />} />
-                <Route path="/events/new" element={<EventForm />} />
-                <Route path="/events/:id/edit" element={<EventForm />} />
-                <Route path="/events/:id" element={<ViewEvent />} />
-                <Route path="/attendees/new" element={<AttendeeForm />} />
-                <Route path="/attendees/:id/edit" element={<AttendeeForm />} />
-              </Routes>
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/events" />} />
+                  <Route path="/events" element={<EventList />} />
+                  <Route path="/attendees" element={<AttendeeList />} />
+                  <Route path="/events/new" element={<EventForm />} />
+                  <Route path="/events/:id/edit" element={<EventForm />} />
+                  <Route path="/events/:id" element={<ViewEvent />} />
+                  <Route path="/attendees/new" element={<AttendeeForm />} />
+                  <Route
+                    path="/attendees/:id/edit"
+                    element={<AttendeeForm />}
+                  />
+                </Routes>
+              </Layout>
+            </ProtectedRoute>
           }
         />
       </Routes>
