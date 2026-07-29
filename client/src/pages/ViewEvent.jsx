@@ -8,30 +8,60 @@ function ViewEvent() {
 
   const [event, setEvent] = useState(null);
   const [attendees, setAttendees] = useState([]);
+  const [allAttendees, setAllAttendees] = useState([]);
+  const [selectedAttendeeId, setSelectedAttendeeId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [registerError, setRegisterError] = useState("");
+
+  const fetchData = async () => {
+    try {
+      const [eventRes, attendeesRes, allAttendeesRes] = await Promise.all([
+        api.get(`/events/${id}`),
+        api.get(`/events/${id}/attendees`),
+        api.get("/attendees"),
+      ]);
+      setEvent(eventRes.data);
+      setAttendees(attendeesRes.data);
+      setAllAttendees(allAttendeesRes.data);
+    } catch (err) {
+      setError("Failed to load event");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [eventRes, attendeesRes] = await Promise.all([
-          api.get(`/events/${id}`),
-          api.get(`/events/${id}/attendees`),
-        ]);
-        setEvent(eventRes.data);
-        setAttendees(attendeesRes.data);
-      } catch (err) {
-        setError("Failed to load event");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, [id]);
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setRegisterError("");
+
+    if (!selectedAttendeeId) return;
+
+    try {
+      await api.post(`/events/${id}/register`, {
+        attendeeId: selectedAttendeeId,
+      });
+      setSelectedAttendeeId("");
+      fetchData();
+    } catch (err) {
+      setRegisterError(
+        err.response?.data?.error || "Failed to register attendee",
+      );
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="error-text">{error}</p>;
   if (!event) return <p>Event not found.</p>;
+
+  const registeredIds = attendees.map((a) => a.id);
+  const availableAttendees = allAttendees.filter(
+    (a) => !registeredIds.includes(a.id),
+  );
 
   return (
     <div className="view-event-page">
@@ -80,6 +110,31 @@ function ViewEvent() {
             ))}
           </tbody>
         </table>
+      )}
+
+      <h2>Register an Attendee</h2>
+
+      {registerError && <p className="error-text">{registerError}</p>}
+
+      {availableAttendees.length === 0 ? (
+        <p>All attendees are already registered to this event.</p>
+      ) : (
+        <form onSubmit={handleRegister} className="register-form">
+          <select
+            value={selectedAttendeeId}
+            onChange={(e) => setSelectedAttendeeId(e.target.value)}
+            required>
+            <option value="">-- Select an attendee --</option>
+            {availableAttendees.map((attendee) => (
+              <option key={attendee.id} value={attendee.id}>
+                {attendee.name} ({attendee.email})
+              </option>
+            ))}
+          </select>
+          <button type="submit" className="btn-primary">
+            Register
+          </button>
+        </form>
       )}
     </div>
   );
