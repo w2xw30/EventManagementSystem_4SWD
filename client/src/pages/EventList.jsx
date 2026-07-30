@@ -23,6 +23,10 @@ function EventList() {
     }
   };
 
+  useEffect(() => {
+    fetchEvents();
+  }, [search]);
+
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this event?",
@@ -36,10 +40,6 @@ function EventList() {
       setError("Failed to delete event");
     }
   };
-
-  useEffect(() => {
-    fetchEvents();
-  }, [search]);
 
   return (
     <div className="event-list-page">
@@ -61,50 +61,49 @@ function EventList() {
       {loading && <p>Loading events...</p>}
       {error && <p className="error-text">{error}</p>}
 
-      {!loading && !error && (
-        <table className="event-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Date</th>
-              <th>Location</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.length === 0 ? (
-              <tr>
-                <td colSpan="4">No events found.</td>
-              </tr>
-            ) : (
-              events.map((event) => (
-                <tr key={event.id}>
-                  <td>{event.name}</td>
-                  <td>{event.date}</td>
-                  <td>{event.location}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <Link to={`/events/${event.id}`} className="btn-view">
-                        View
-                      </Link>
-                      <Link
-                        to={`/events/${event.id}/edit`}
-                        className="btn-edit">
-                        Edit
-                      </Link>
-                      <button
-                        className="btn-delete"
-                        onClick={() => handleDelete(event.id)}>
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      )}
+      {!loading &&
+        !error &&
+        (events.length === 0 ? (
+          <p>No events found.</p>
+        ) : (
+          <div className="event-grid">
+            {events.map((event) => (
+              <div key={event.id} className="event-card">
+                {/* Show the uploaded image, or a plain placeholder block if there isn't one */}
+                {event.imageUrl ? (
+                  <img
+                    src={`http://localhost:3000${event.imageUrl}`}
+                    alt={event.name}
+                    className="event-card-image"
+                  />
+                ) : (
+                  <div className="event-card-placeholder">No Image</div>
+                )}
+
+                <div className="event-card-body">
+                  <h3 className="event-card-title">{event.name}</h3>
+                  <p className="event-card-meta">
+                    {event.date} · {event.location}
+                  </p>
+
+                  <div className="event-card-actions">
+                    <Link to={`/events/${event.id}`} className="btn-view">
+                      View
+                    </Link>
+                    <Link to={`/events/${event.id}/edit`} className="btn-edit">
+                      Edit
+                    </Link>
+                    <button
+                      className="btn-delete"
+                      onClick={() => handleDelete(event.id)}>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
     </div>
   );
 }

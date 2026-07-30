@@ -1,5 +1,5 @@
 .event-list-page {
-  max-width: 900px;
+  max-width: 1000px;
 }
 
 .event-list-header {
@@ -27,56 +27,91 @@
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   font-family: "Poppins", sans-serif;
   box-sizing: border-box;
 }
 
-.event-table {
+/* The grid itself — responsive, auto-fills as many columns as fit */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.event-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden; /* keeps the image corners rounded to match the card */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.event-card-image {
   width: 100%;
-  border-collapse: collapse;
+  height: 140px;
+  object-fit: cover;
+  display: block;
 }
 
-.event-table th,
-.event-table td {
-  text-align: left;
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-}
-
-.event-table th {
-  color: #888;
-  font-size: 13px;
-  text-transform: uppercase;
-}
-
-.event-table a {
-  color: #4f46e5;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.error-text {
-  color: #b91c1c;
-}
-
-.action-buttons {
+.event-card-placeholder {
+  width: 100%;
+  height: 140px;
+  background-color: #f1f1f4;
+  color: #aaa;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.event-card-body {
+  padding: 14px;
+}
+
+.event-card-title {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e1e2f;
+}
+
+.event-card-meta {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #888;
+}
+
+.event-card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.event-card-actions .btn-view,
+.event-card-actions .btn-edit,
+.event-card-actions .btn-delete {
+  flex: 1;
+  text-align: center;
 }
 
 .btn-view,
 .btn-edit,
 .btn-delete {
-  padding: 6px 12px;
+  padding: 6px 10px;
   border-radius: 6px;
   font-family: "Poppins", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  display: inline-block;
 }
 
 .btn-view {
@@ -104,4 +139,8 @@
 
 .btn-delete:hover {
   background-color: #fecaca;
+}
+
+.error-text {
+  color: #b91c1c;
 }
