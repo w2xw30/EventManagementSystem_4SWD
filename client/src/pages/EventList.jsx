@@ -23,6 +23,20 @@ function EventList() {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event?",
+    );
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`/events/${id}`);
+      fetchEvents();
+    } catch (err) {
+      setError("Failed to delete event");
+    }
+  };
+
   useEffect(() => {
     fetchEvents();
   }, [search]);
@@ -69,9 +83,21 @@ function EventList() {
                   <td>{event.date}</td>
                   <td>{event.location}</td>
                   <td>
-                    <Link to={`/events/${event.id}`}>View</Link>
-                    {" | "}
-                    <Link to={`/events/${event.id}/edit`}>Edit</Link>
+                    <div className="action-buttons">
+                      <Link to={`/events/${event.id}`} className="btn-view">
+                        View
+                      </Link>
+                      <Link
+                        to={`/events/${event.id}/edit`}
+                        className="btn-edit">
+                        Edit
+                      </Link>
+                      <button
+                        className="btn-delete"
+                        onClick={() => handleDelete(event.id)}>
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
