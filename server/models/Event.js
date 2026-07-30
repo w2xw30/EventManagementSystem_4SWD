@@ -34,6 +34,10 @@ const Event = sequelize.define("Event", {
       notEmpty: true,
     },
   },
+  imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 module.exports = Event;

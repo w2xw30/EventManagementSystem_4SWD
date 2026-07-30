@@ -15,10 +15,10 @@ const PORT = 3000;
 
 app.use(express.json());
 app.use(cors());
-
 app.use("/auth", authRoutes);
 app.use("/events", authMiddleware, eventRoutes);
 app.use("/attendees", authMiddleware, attendeeRoutes);
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
   res.send("Server is running");

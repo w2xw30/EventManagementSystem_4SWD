@@ -3,6 +3,7 @@ const router = express.Router();
 const Event = require("../models/Event");
 const Attendee = require("../models/Attendee");
 const { Op } = require("sequelize");
+const upload = require("../config/multer");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -28,22 +29,34 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", upload.single("image"), async (req, res, next) => {
   try {
-    const newEvent = await Event.create(req.body);
+    const eventData = { ...req.body };
+
+    if (req.file) {
+      eventData.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    const newEvent = await Event.create(eventData);
     res.status(201).json(newEvent);
   } catch (error) {
     next(error);
   }
 });
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", upload.single("image"), async (req, res, next) => {
   try {
     const event = await Event.findByPk(req.params.id);
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
     }
-    await event.update(req.body);
+
+    const eventData = { ...req.body };
+    if (req.file) {
+      eventData.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    await event.update(eventData);
     res.json(event);
   } catch (error) {
     next(error);

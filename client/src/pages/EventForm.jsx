@@ -15,6 +15,8 @@ function EventForm() {
     time: "",
     location: "",
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(isEditing);
 
@@ -24,6 +26,9 @@ function EventForm() {
         try {
           const response = await api.get(`/events/${id}`);
           setFormData(response.data);
+          if (response.data.imageUrl) {
+            setImagePreview(`http://localhost:3000${response.data.imageUrl}`);
+          }
         } catch (err) {
           setError("Failed to load event");
         } finally {
@@ -38,15 +43,33 @@ function EventForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("description", formData.description || "");
+    data.append("date", formData.date);
+    data.append("time", formData.time);
+    data.append("location", formData.location);
+    if (imageFile) {
+      data.append("image", imageFile);
+    }
+
     try {
       if (isEditing) {
-        await api.put(`/events/${id}`, formData);
+        await api.put(`/events/${id}`, data);
       } else {
-        await api.post("/events", formData);
+        await api.post("/events", data);
       }
       navigate("/events");
     } catch (err) {
@@ -63,6 +86,12 @@ function EventForm() {
       {error && <p className="error-text">{error}</p>}
 
       <form onSubmit={handleSubmit} className="event-form">
+        <label>Event Image</label>
+        {imagePreview && (
+          <img src={imagePreview} alt="Preview" className="image-preview" />
+        )}
+        <input type="file" accept="image/*" onChange={handleImageChange} />
+
         <label>Event Name</label>
         <input
           type="text"

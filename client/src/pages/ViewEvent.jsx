@@ -66,6 +66,13 @@ function ViewEvent() {
   return (
     <div className="view-event-page">
       <div className="view-event-header">
+        {event.imageUrl && (
+          <img
+            src={`http://localhost:3000${event.imageUrl}`}
+            alt={event.name}
+            className="event-image"
+          />
+        )}
         <h1>{event.name}</h1>
         <Link to={`/events/${event.id}/edit`} className="btn-secondary">
           Edit
