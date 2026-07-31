@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../api/auth";
+import ConfirmModal from "./ConfirmModal";
 import "./Sidebar.css";
 
 function Sidebar() {
   const navigate = useNavigate();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
     logout();
     navigate("/login");
   };
@@ -23,9 +26,17 @@ function Sidebar() {
         </NavLink>
       </nav>
 
-      <button className="logout-btn" onClick={handleLogout}>
+      <button className="logout-btn" onClick={() => setShowLogoutConfirm(true)}>
         Logout
       </button>
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Log Out"
+        message="Are you sure you want to log out?"
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </div>
   );
 }

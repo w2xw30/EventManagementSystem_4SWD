@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
+import ConfirmModal from "../components/ConfirmModal";
 import "./AttendeeList.css";
 
 function AttendeeList() {
   const [attendees, setAttendees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchAttendees = async () => {
     try {
@@ -24,14 +26,10 @@ function AttendeeList() {
     fetchAttendees();
   }, []);
 
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this attendee?",
-    );
-    if (!confirmed) return;
-
+  const confirmDelete = async () => {
     try {
-      await api.delete(`/attendees/${id}`);
+      await api.delete(`/attendees/${deleteTarget}`);
+      setDeleteTarget(null);
       fetchAttendees();
     } catch (err) {
       setError("Failed to delete attendee");
@@ -80,7 +78,7 @@ function AttendeeList() {
                       </Link>
                       <button
                         className="btn-delete"
-                        onClick={() => handleDelete(attendee.id)}>
+                        onClick={() => setDeleteTarget(attendee.id)}>
                         Delete
                       </button>
                     </div>
@@ -91,6 +89,14 @@ function AttendeeList() {
           </tbody>
         </table>
       )}
+
+      <ConfirmModal
+        isOpen={deleteTarget !== null}
+        title="Delete Attendee"
+        message="Are you sure you want to delete this attendee? This cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

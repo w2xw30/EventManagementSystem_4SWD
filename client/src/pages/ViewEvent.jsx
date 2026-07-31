@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api/axios";
 import "./ViewEvent.css";
+import ConfirmModal from "../components/ConfirmModal";
 
 function ViewEvent() {
   const { id } = useParams();
@@ -13,13 +14,12 @@ function ViewEvent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [registerError, setRegisterError] = useState("");
+  const [unregisterTarget, setUnregisterTarget] = useState(null);
 
-  const handleUnregister = async (attendeeId) => {
-    const confirmed = window.confirm("Remove this attendee from the event?");
-    if (!confirmed) return;
-
+  const confirmUnregister = async () => {
     try {
-      await api.delete(`/events/${id}/attendees/${attendeeId}`);
+      await api.delete(`/events/${id}/attendees/${unregisterTarget}`);
+      setUnregisterTarget(null);
       fetchData();
     } catch (err) {
       setRegisterError("Failed to unregister attendee");
@@ -130,7 +130,7 @@ function ViewEvent() {
                 <td>
                   <button
                     className="btn-unregister"
-                    onClick={() => handleUnregister(attendee.id)}>
+                    onClick={() => setUnregisterTarget(attendee.id)}>
                     Unregister
                   </button>
                 </td>
@@ -164,6 +164,14 @@ function ViewEvent() {
           </button>
         </form>
       )}
+
+      <ConfirmModal
+        isOpen={unregisterTarget !== null}
+        title="Unregister Attendee"
+        message="Remove this attendee from the event?"
+        onConfirm={confirmUnregister}
+        onCancel={() => setUnregisterTarget(null)}
+      />
     </div>
   );
 }
