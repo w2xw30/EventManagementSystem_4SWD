@@ -109,4 +109,23 @@ router.get("/:id/attendees", async (req, res, next) => {
   }
 });
 
+router.delete("/:id/attendees/:attendeeId", async (req, res, next) => {
+  try {
+    const event = await Event.findByPk(req.params.id);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    const attendee = await Attendee.findByPk(req.params.attendeeId);
+    if (!attendee) {
+      return res.status(404).json({ error: "Attendee not found" });
+    }
+    await event.removeAttendee(attendee);
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

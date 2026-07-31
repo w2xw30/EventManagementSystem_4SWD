@@ -14,6 +14,18 @@ function ViewEvent() {
   const [error, setError] = useState("");
   const [registerError, setRegisterError] = useState("");
 
+  const handleUnregister = async (attendeeId) => {
+    const confirmed = window.confirm("Remove this attendee from the event?");
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`/events/${id}/attendees/${attendeeId}`);
+      fetchData();
+    } catch (err) {
+      setRegisterError("Failed to unregister attendee");
+    }
+  };
+
   const fetchData = async () => {
     try {
       const [eventRes, attendeesRes, allAttendeesRes] = await Promise.all([
@@ -66,17 +78,18 @@ function ViewEvent() {
   return (
     <div className="view-event-page">
       <div className="view-event-header">
-        {event.imageUrl && (
-          <img
-            src={`http://localhost:3000${event.imageUrl}`}
-            alt={event.name}
-            className="event-image"
-          />
-        )}
         <h1>{event.name}</h1>
-        <Link to={`/events/${event.id}/edit`} className="btn-secondary">
-          Edit
-        </Link>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <span
+            className={`status-badge ${new Date(event.date) >= new Date().setHours(0, 0, 0, 0) ? "upcoming" : "past"}`}>
+            {new Date(event.date) >= new Date().setHours(0, 0, 0, 0)
+              ? "Upcoming"
+              : "Past"}
+          </span>
+          <Link to={`/events/${event.id}/edit`} className="btn-secondary">
+            Edit
+          </Link>
+        </div>
       </div>
 
       <div className="event-details">
@@ -105,6 +118,7 @@ function ViewEvent() {
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -113,6 +127,13 @@ function ViewEvent() {
                 <td>{attendee.name}</td>
                 <td>{attendee.email}</td>
                 <td>{attendee.phoneNumber}</td>
+                <td>
+                  <button
+                    className="btn-unregister"
+                    onClick={() => handleUnregister(attendee.id)}>
+                    Unregister
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

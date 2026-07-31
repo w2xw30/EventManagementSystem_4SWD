@@ -9,6 +9,13 @@ function EventList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const getEventStatus = (eventDate) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const eventDay = new Date(eventDate);
+    return eventDay >= today ? "Upcoming" : "Past";
+  };
+
   const fetchEvents = async () => {
     try {
       setLoading(true);
@@ -81,7 +88,13 @@ function EventList() {
                 )}
 
                 <div className="event-card-body">
-                  <h3 className="event-card-title">{event.name}</h3>
+                  <div className="event-card-top">
+                    <h3 className="event-card-title">{event.name}</h3>
+                    <span
+                      className={`status-badge ${getEventStatus(event.date) === "Upcoming" ? "upcoming" : "past"}`}>
+                      {getEventStatus(event.date)}
+                    </span>
+                  </div>
                   <p className="event-card-meta">
                     {event.date} · {event.location}
                   </p>
