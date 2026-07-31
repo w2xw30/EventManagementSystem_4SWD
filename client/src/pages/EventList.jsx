@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import api from "../api/axios";
 import ConfirmModal from "../components/ConfirmModal";
 import "./EventList.css";
+import { useToast } from "../context/ToastContext";
 
 function EventList() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [deleteTarget, setDeleteTarget] = useState(null); // holds the event id pending deletion
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const { showToast } = useToast();
 
   const fetchEvents = async () => {
     try {
@@ -34,8 +36,10 @@ function EventList() {
       await api.delete(`/events/${deleteTarget}`);
       setDeleteTarget(null);
       fetchEvents();
+      showToast("Event deleted");
     } catch (err) {
       setError("Failed to delete event");
+      showToast("Failed to delete event", "error");
     }
   };
 

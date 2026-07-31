@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./EventForm.css";
+import { useToast } from "../context/ToastContext";
 
 function EventForm() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ function EventForm() {
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(isEditing);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (isEditing) {
@@ -72,8 +74,10 @@ function EventForm() {
         await api.post("/events", data);
       }
       navigate("/events");
+      showToast(isEditing ? "Event updated!" : "Event created!");
     } catch (err) {
       setError(err.response?.data?.error || "Failed to save event");
+      showToast("Failed to save event", "error");
     }
   };
 

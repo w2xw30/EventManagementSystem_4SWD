@@ -3,14 +3,16 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../api/auth";
 import ConfirmModal from "./ConfirmModal";
 import "./Sidebar.css";
+import { useToast } from "../context/ToastContext";
 
 function Sidebar() {
   const navigate = useNavigate();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-
+  const { showToast } = useToast();
   const confirmLogout = () => {
     logout();
     navigate("/login");
+    showToast("Logged out");
   };
 
   return (

@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import api from "../api/axios";
 import ConfirmModal from "../components/ConfirmModal";
 import "./AttendeeList.css";
+import { useToast } from "../context/ToastContext";
 
 function AttendeeList() {
   const [attendees, setAttendees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const { showToast } = useToast();
 
   const fetchAttendees = async () => {
     try {
@@ -31,11 +33,12 @@ function AttendeeList() {
       await api.delete(`/attendees/${deleteTarget}`);
       setDeleteTarget(null);
       fetchAttendees();
+      showToast("Attendee deleted");
     } catch (err) {
       setError("Failed to delete attendee");
+      showToast("Failed to delete attendee", "error");
     }
   };
-
   return (
     <div className="attendee-list-page">
       <div className="attendee-list-header">

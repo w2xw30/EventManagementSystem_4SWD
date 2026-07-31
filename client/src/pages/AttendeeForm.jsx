@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./AttendeeForm.css";
+import { useToast } from "../context/ToastContext";
 
 function AttendeeForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
+  const { showToast } = useToast();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -47,8 +49,10 @@ function AttendeeForm() {
         await api.post("/attendees", formData);
       }
       navigate("/attendees");
+      showToast(isEditing ? "Attendee updated!" : "Attendee created!");
     } catch (err) {
       setError(err.response?.data?.error || "Failed to save attendee");
+      showToast("Failed to save attendee", "error");
     }
   };
 

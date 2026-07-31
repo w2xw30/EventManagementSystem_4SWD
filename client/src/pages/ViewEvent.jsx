@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import api from "../api/axios";
 import "./ViewEvent.css";
 import ConfirmModal from "../components/ConfirmModal";
+import { useToast } from "../context/ToastContext";
 
 function ViewEvent() {
   const { id } = useParams();
@@ -15,14 +16,17 @@ function ViewEvent() {
   const [error, setError] = useState("");
   const [registerError, setRegisterError] = useState("");
   const [unregisterTarget, setUnregisterTarget] = useState(null);
+  const { showToast } = useToast();
 
   const confirmUnregister = async () => {
     try {
       await api.delete(`/events/${id}/attendees/${unregisterTarget}`);
       setUnregisterTarget(null);
       fetchData();
+      showToast("Attendee unregistered");
     } catch (err) {
       setRegisterError("Failed to unregister attendee");
+      showToast("Failed to unregister attendee", "error");
     }
   };
 
@@ -50,7 +54,6 @@ function ViewEvent() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setRegisterError("");
-
     if (!selectedAttendeeId) return;
 
     try {
@@ -59,10 +62,12 @@ function ViewEvent() {
       });
       setSelectedAttendeeId("");
       fetchData();
+      showToast("Attendee registered!");
     } catch (err) {
       setRegisterError(
         err.response?.data?.error || "Failed to register attendee",
       );
+      showToast("Failed to register attendee", "error");
     }
   };
 
