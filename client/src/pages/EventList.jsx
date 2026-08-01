@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
 import ConfirmModal from "../components/ConfirmModal";
-import "./EventList.css";
 import { useToast } from "../context/ToastContext";
+import "./EventList.css";
 
 function EventList() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("date-asc");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -50,6 +51,21 @@ function EventList() {
     return eventDay >= today ? "Upcoming" : "Past";
   };
 
+  const sortedEvents = [...events].sort((a, b) => {
+    switch (sortBy) {
+      case "date-asc":
+        return new Date(a.date) - new Date(b.date);
+      case "date-desc":
+        return new Date(b.date) - new Date(a.date);
+      case "name-asc":
+        return a.name.localeCompare(b.name);
+      case "name-desc":
+        return b.name.localeCompare(a.name);
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="event-list-page">
       <div className="event-list-header">
@@ -59,24 +75,36 @@ function EventList() {
         </Link>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search events by name..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="search-bar"
-      />
+      <div className="filters-row">
+        <input
+          type="text"
+          placeholder="Search events by name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-bar"
+        />
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="sort-select">
+          <option value="date-asc">Date (Soonest first)</option>
+          <option value="date-desc">Date (Latest first)</option>
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+        </select>
+      </div>
 
       {loading && <p>Loading events...</p>}
       {error && <p className="error-text">{error}</p>}
 
       {!loading &&
         !error &&
-        (events.length === 0 ? (
+        (sortedEvents.length === 0 ? (
           <p>No events found.</p>
         ) : (
           <div className="event-grid">
-            {events.map((event) => (
+            {sortedEvents.map((event) => (
               <div key={event.id} className="event-card">
                 {event.imageUrl ? (
                   <img
