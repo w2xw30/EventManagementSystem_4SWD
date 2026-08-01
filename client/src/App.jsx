@@ -7,6 +7,7 @@ import EventForm from "./pages/EventForm";
 import ViewEvent from "./pages/ViewEvent";
 import AttendeeForm from "./pages/AttendeeForm";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Routes>
-                  <Route path="/" element={<Navigate to="/events" />} />
+                  <Route path="/" element={<Dashboard />} />
                   <Route path="/events" element={<EventList />} />
                   <Route path="/attendees" element={<AttendeeList />} />
                   <Route path="/events/new" element={<EventForm />} />

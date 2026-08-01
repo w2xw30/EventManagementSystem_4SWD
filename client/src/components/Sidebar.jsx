@@ -20,6 +20,9 @@ function Sidebar() {
       <h2 className="sidebar-title">Event Admin</h2>
 
       <nav className="sidebar-nav">
+        <NavLink to="/" end className="sidebar-link">
+          Dashboard
+        </NavLink>
         <NavLink to="/events" className="sidebar-link">
           Events
         </NavLink>
