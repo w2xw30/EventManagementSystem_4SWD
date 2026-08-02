@@ -29,6 +29,9 @@ function Sidebar() {
         <NavLink to="/attendees" className="sidebar-link">
           Attendees
         </NavLink>
+        <NavLink to="/profile" className="sidebar-link">
+          Account
+        </NavLink>
       </nav>
 
       <button className="logout-btn" onClick={() => setShowLogoutConfirm(true)}>

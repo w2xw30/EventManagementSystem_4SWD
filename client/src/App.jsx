@@ -8,6 +8,7 @@ import ViewEvent from "./pages/ViewEvent";
 import AttendeeForm from "./pages/AttendeeForm";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
                     path="/attendees/:id/edit"
                     element={<AttendeeForm />}
                   />
+                  <Route path="/profile" element={<Profile />} />
                 </Routes>
               </Layout>
             </ProtectedRoute>
