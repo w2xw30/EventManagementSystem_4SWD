@@ -2,16 +2,35 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const { get, run } = require("../config/database");
 const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/register", async (req, res, next) => {
   try {
     const { username, password } = req.body;
+
+    if (!username?.trim() || !password?.trim()) {
+      return res
+        .status(400)
+        .json({ error: "Username and password are required" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({ username, password: hashedPassword });
-    res.status(201).json({ id: user.id, username: user.username });
+    let result;
+    try {
+      result = await run(
+        "INSERT INTO Users (username, password) VALUES (?, ?)",
+        [username, hashedPassword],
+      );
+    } catch (err) {
+      if (err.message?.includes("UNIQUE")) {
+        return res.status(400).json({ error: "Username already taken" });
+      }
+      throw err;
+    }
+
+    res.status(201).json({ id: result.lastInsertRowid, username });
   } catch (error) {
     next(error);
   }
@@ -21,7 +40,9 @@ router.post("/login", async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ where: { username } });
+    const user = await get("SELECT * FROM Users WHERE username = ?", [
+      username,
+    ]);
     if (!user) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
@@ -34,7 +55,6 @@ router.post("/login", async (req, res, next) => {
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-
     res.json({ token });
   } catch (error) {
     next(error);
@@ -43,9 +63,9 @@ router.post("/login", async (req, res, next) => {
 
 router.get("/me", authMiddleware, async (req, res, next) => {
   try {
-    const user = await User.findByPk(req.userId, {
-      attributes: ["id", "username"],
-    });
+    const user = await get("SELECT id, username FROM Users WHERE id = ?", [
+      req.userId,
+    ]);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -59,7 +79,7 @@ router.put("/change-password", authMiddleware, async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    const user = await User.findByPk(req.userId);
+    const user = await get("SELECT * FROM Users WHERE id = ?", [req.userId]);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -70,7 +90,10 @@ router.put("/change-password", authMiddleware, async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await user.update({ password: hashedPassword });
+    await run("UPDATE Users SET password = ? WHERE id = ?", [
+      hashedPassword,
+      req.userId,
+    ]);
 
     res.json({ message: "Password updated successfully" });
   } catch (error) {

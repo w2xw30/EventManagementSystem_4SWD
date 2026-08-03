@@ -1,24 +1,24 @@
 require("dotenv").config();
 
 const express = require("express");
-const sequelize = require("./config/database");
+const cors = require("cors");
+const initDb = require("./config/initDb");
 const eventRoutes = require("./routes/eventRoutes");
 const attendeeRoutes = require("./routes/attendeeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const authMiddleware = require("./middleware/authMiddleware");
-require("./models/associations");
 
-const cors = require("cors");
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+app.use("/uploads", express.static("uploads"));
+
 app.use("/auth", authRoutes);
 app.use("/events", authMiddleware, eventRoutes);
 app.use("/attendees", authMiddleware, attendeeRoutes);
-app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
   res.send("Server is running");
@@ -26,9 +26,14 @@ app.get("/", (req, res) => {
 
 app.use(errorHandler);
 
-sequelize.sync({ force: false }).then(() => {
-  console.log("Database synced");
-  app.listen(PORT, () => {
-    console.log(`Server listening on http://localhost:${PORT}`);
+initDb()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server listening on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to initialize database:", err);
   });
-});
+
+module.exports = app;
