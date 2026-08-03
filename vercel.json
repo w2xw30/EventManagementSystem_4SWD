@@ -12,5 +12,10 @@
     { "src": "/api/(.*)", "dest": "server/index.js" },
     { "src": "/assets/(.*)", "dest": "client/assets/$1" },
     { "src": "/(.*)", "dest": "client/index.html" }
-  ]
+  ],
+  "build": {
+    "env": {
+      "VITE_API_URL": "https://event-management-system-2x.vercel.app/api"
+    }
+  }
 }
