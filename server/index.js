@@ -16,9 +16,9 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-app.use("/auth", authRoutes);
-app.use("/events", authMiddleware, eventRoutes);
-app.use("/attendees", authMiddleware, attendeeRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/events", authMiddleware, eventRoutes);
+app.use("/api/attendees", authMiddleware, attendeeRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running");
@@ -28,9 +28,11 @@ app.use(errorHandler);
 
 initDb()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server listening on http://localhost:${PORT}`);
-    });
+    if (require.main === module) {
+      app.listen(PORT, () => {
+        console.log(`Server listening on http://localhost:${PORT}`);
+      });
+    }
   })
   .catch((err) => {
     console.error("Failed to initialize database:", err);
