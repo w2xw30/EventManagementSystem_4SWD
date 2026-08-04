@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { get, all, run } = require("../config/database");
-const upload = require("../config/multer");
-
+const upload = require("../config/multer"); // make sure this line exists
+const { uploadImage } = require("../config/blob"); // and this one too
 router.get("/", async (req, res, next) => {
   try {
     const { search } = req.query;
@@ -39,13 +39,13 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", upload.single("image"), async (req, res, next) => {
   try {
     const { name, description, date, time, location } = req.body;
+
     if (!name?.trim() || !date?.trim() || !time?.trim() || !location?.trim()) {
       return res
         .status(400)
         .json({ error: "Name, date, time, and location are required" });
     }
-
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    const imageUrl = req.file ? await uploadImage(req.file) : null;
 
     const result = await run(
       `INSERT INTO Events (name, description, date, time, location, imageUrl)
@@ -76,9 +76,8 @@ router.put("/:id", upload.single("image"), async (req, res, next) => {
     const date = req.body.date ?? existing.date;
     const time = req.body.time ?? existing.time;
     const location = req.body.location ?? existing.location;
-    const imageUrl = req.file
-      ? `/uploads/${req.file.filename}`
-      : existing.imageUrl;
+
+    const imageUrl = req.file ? await uploadImage(req.file) : existing.imageUrl;
 
     await run(
       `UPDATE Events SET name = ?, description = ?, date = ?, time = ?, location = ?, imageUrl = ?, updatedAt = CURRENT_TIMESTAMP

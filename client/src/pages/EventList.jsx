@@ -108,7 +108,7 @@ function EventList() {
               <div key={event.id} className="event-card">
                 {event.imageUrl ? (
                   <img
-                    src={`http://localhost:3000${event.imageUrl}`}
+                    src={event.imageUrl}
                     alt={event.name}
                     className="event-card-image"
                   />

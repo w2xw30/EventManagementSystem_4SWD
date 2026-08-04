@@ -29,7 +29,7 @@ function EventForm() {
           const response = await api.get(`/events/${id}`);
           setFormData(response.data);
           if (response.data.imageUrl) {
-            setImagePreview(`http://localhost:3000${response.data.imageUrl}`);
+            setImagePreview(response.data.imageUrl);
           }
         } catch (err) {
           setError("Failed to load event");
