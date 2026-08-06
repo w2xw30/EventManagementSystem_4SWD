@@ -8,6 +8,7 @@ const attendeeRoutes = require("./routes/attendeeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const authMiddleware = require("./middleware/authMiddleware");
+const clientAuthRoutes = require("./routes/clientAuthRoutes");
 
 const app = express();
 const PORT = 3000;
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/events", authMiddleware, eventRoutes);
 app.use("/api/attendees", authMiddleware, attendeeRoutes);
+app.use("/api/client-auth", clientAuthRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running");

@@ -16,6 +16,28 @@ async function initDb() {
   `);
 
   await run(`
+    CREATE TABLE IF NOT EXISTS Clients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL,
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await run(`
+    CREATE TABLE IF NOT EXISTS EventInterests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      EventId INTEGER NOT NULL,
+      ClientId INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (EventId) REFERENCES Events(id) ON DELETE CASCADE,
+      FOREIGN KEY (ClientId) REFERENCES Clients(id) ON DELETE CASCADE,
+      UNIQUE(EventId, ClientId)
+    )
+  `);
+  await run(`
     CREATE TABLE IF NOT EXISTS Attendees (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,

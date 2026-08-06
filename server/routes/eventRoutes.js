@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { get, all, run } = require("../config/database");
-const upload = require("../config/multer"); // make sure this line exists
-const { uploadImage } = require("../config/blob"); // and this one too
+const upload = require("../config/multer");
+const { uploadImage } = require("../config/blob");
 router.get("/", async (req, res, next) => {
   try {
     const { search } = req.query;
