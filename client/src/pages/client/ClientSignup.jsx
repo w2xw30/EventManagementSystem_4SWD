@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Mail, Lock } from "lucide-react";
+import { User, Mail, Phone, Lock } from "lucide-react";
 import { clientAuthApi } from "../../api/clientAxios";
 import "./ClientAuth.css";
 
 function ClientSignup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,6 +23,7 @@ function ClientSignup() {
       const response = await clientAuthApi.post("/signup", {
         name,
         email,
+        phoneNumber,
         password,
       });
       localStorage.setItem("clientToken", response.data.token);
@@ -69,6 +71,17 @@ function ClientSignup() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <label>Phone Number</label>
+          <div className="client-input-wrap">
+            <Phone size={18} className="client-input-icon" />
+            <input
+              type="text"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
               required
             />
           </div>

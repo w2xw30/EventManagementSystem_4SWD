@@ -216,7 +216,7 @@ router.put("/:id/interests/:interestId/approve", async (req, res, next) => {
     if (!attendee) {
       const result = await run(
         "INSERT INTO Attendees (name, email, phoneNumber) VALUES (?, ?, ?)",
-        [client.name, client.email, "N/A"], // phone unknown from client signup — admin can edit later
+        [client.name, client.email, client.phoneNumber], // now using the real phone number
       );
       attendee = await get("SELECT * FROM Attendees WHERE id = ?", [
         result.lastInsertRowid,

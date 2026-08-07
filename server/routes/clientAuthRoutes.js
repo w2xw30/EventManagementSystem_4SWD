@@ -7,12 +7,17 @@ const clientAuthMiddleware = require("../middleware/clientAuthMiddleware");
 
 router.post("/signup", async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, phoneNumber, password } = req.body;
 
-    if (!name?.trim() || !email?.trim() || !password?.trim()) {
-      return res
-        .status(400)
-        .json({ error: "Name, email, and password are required" });
+    if (
+      !name?.trim() ||
+      !email?.trim() ||
+      !phoneNumber?.trim() ||
+      !password?.trim()
+    ) {
+      return res.status(400).json({
+        error: "Name, email, phone number, and password are required",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -20,8 +25,8 @@ router.post("/signup", async (req, res, next) => {
     let result;
     try {
       result = await run(
-        "INSERT INTO Clients (name, email, password) VALUES (?, ?, ?)",
-        [name, email, hashedPassword],
+        "INSERT INTO Clients (name, email, phoneNumber, password) VALUES (?, ?, ?, ?)",
+        [name, email, phoneNumber, hashedPassword],
       );
     } catch (err) {
       if (err.message?.includes("UNIQUE")) {
@@ -30,6 +35,19 @@ router.post("/signup", async (req, res, next) => {
           .json({ error: "An account with this email already exists" });
       }
       throw err;
+    }
+
+    const existingAttendee = await get(
+      "SELECT * FROM Attendees WHERE email = ?",
+      [email],
+    );
+    if (!existingAttendee) {
+      try {
+        await run(
+          "INSERT INTO Attendees (name, email, phoneNumber) VALUES (?, ?, ?)",
+          [name, email, phoneNumber],
+        );
+      } catch (err) {}
     }
 
     const token = jwt.sign(
