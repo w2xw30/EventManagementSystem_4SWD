@@ -11,12 +11,37 @@ function ViewEvent() {
   const [event, setEvent] = useState(null);
   const [attendees, setAttendees] = useState([]);
   const [allAttendees, setAllAttendees] = useState([]);
+  const [interests, setInterests] = useState([]);
   const [selectedAttendeeId, setSelectedAttendeeId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [registerError, setRegisterError] = useState("");
   const [unregisterTarget, setUnregisterTarget] = useState(null);
   const { showToast } = useToast();
+
+  const fetchData = async () => {
+    try {
+      const [eventRes, attendeesRes, allAttendeesRes, interestsRes] =
+        await Promise.all([
+          api.get(`/events/${id}`),
+          api.get(`/events/${id}/attendees`),
+          api.get("/attendees"),
+          api.get(`/events/${id}/interests`),
+        ]);
+      setEvent(eventRes.data);
+      setAttendees(attendeesRes.data);
+      setAllAttendees(allAttendeesRes.data);
+      setInterests(interestsRes.data);
+    } catch (err) {
+      setError("Failed to load event");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [id]);
 
   const confirmUnregister = async () => {
     try {
@@ -29,27 +54,6 @@ function ViewEvent() {
       showToast("Failed to unregister attendee", "error");
     }
   };
-
-  const fetchData = async () => {
-    try {
-      const [eventRes, attendeesRes, allAttendeesRes] = await Promise.all([
-        api.get(`/events/${id}`),
-        api.get(`/events/${id}/attendees`),
-        api.get("/attendees"),
-      ]);
-      setEvent(eventRes.data);
-      setAttendees(attendeesRes.data);
-      setAllAttendees(allAttendeesRes.data);
-    } catch (err) {
-      setError("Failed to load event");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [id]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -68,6 +72,26 @@ function ViewEvent() {
         err.response?.data?.error || "Failed to register attendee",
       );
       showToast("Failed to register attendee", "error");
+    }
+  };
+
+  const handleApprove = async (interestId) => {
+    try {
+      await api.put(`/events/${id}/interests/${interestId}/approve`);
+      fetchData();
+      showToast("Interest approved!");
+    } catch (err) {
+      showToast("Failed to approve", "error");
+    }
+  };
+
+  const handleReject = async (interestId) => {
+    try {
+      await api.put(`/events/${id}/interests/${interestId}/reject`);
+      fetchData();
+      showToast("Interest rejected");
+    } catch (err) {
+      showToast("Failed to reject", "error");
     }
   };
 
@@ -141,6 +165,46 @@ function ViewEvent() {
                 </td>
               </tr>
             ))}
+          </tbody>
+        </table>
+      )}
+
+      <h2>Pending Interest Requests</h2>
+
+      {interests.filter((i) => i.status === "pending").length === 0 ? (
+        <p>No pending requests.</p>
+      ) : (
+        <table className="attendee-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {interests
+              .filter((i) => i.status === "pending")
+              .map((interest) => (
+                <tr key={interest.id}>
+                  <td>{interest.name}</td>
+                  <td>{interest.email}</td>
+                  <td>
+                    <div className="action-buttons">
+                      <button
+                        className="btn-view"
+                        onClick={() => handleApprove(interest.id)}>
+                        Approve
+                      </button>
+                      <button
+                        className="btn-delete"
+                        onClick={() => handleReject(interest.id)}>
+                        Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       )}
