@@ -180,4 +180,77 @@ router.delete("/:id/attendees/:attendeeId", async (req, res, next) => {
   }
 });
 
+router.get("/:id/interests", async (req, res, next) => {
+  try {
+    const interests = await all(
+      `SELECT EventInterests.id, EventInterests.status, EventInterests.createdAt,
+              Clients.id AS clientId, Clients.name, Clients.email
+       FROM EventInterests
+       JOIN Clients ON Clients.id = EventInterests.ClientId
+       WHERE EventInterests.EventId = ?
+       ORDER BY EventInterests.createdAt DESC`,
+      [req.params.id],
+    );
+    res.json(interests);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/:id/interests/:interestId/approve", async (req, res, next) => {
+  try {
+    const interest = await get("SELECT * FROM EventInterests WHERE id = ?", [
+      req.params.interestId,
+    ]);
+    if (!interest) {
+      return res.status(404).json({ error: "Interest request not found" });
+    }
+
+    const client = await get("SELECT * FROM Clients WHERE id = ?", [
+      interest.ClientId,
+    ]);
+
+    let attendee = await get("SELECT * FROM Attendees WHERE email = ?", [
+      client.email,
+    ]);
+    if (!attendee) {
+      const result = await run(
+        "INSERT INTO Attendees (name, email, phoneNumber) VALUES (?, ?, ?)",
+        [client.name, client.email, "N/A"], // phone unknown from client signup — admin can edit later
+      );
+      attendee = await get("SELECT * FROM Attendees WHERE id = ?", [
+        result.lastInsertRowid,
+      ]);
+    }
+
+    try {
+      await run(
+        "INSERT INTO EventAttendees (EventId, AttendeeId) VALUES (?, ?)",
+        [req.params.id, attendee.id],
+      );
+    } catch (err) {
+      if (!err.message?.includes("UNIQUE")) throw err;
+    }
+
+    await run(`UPDATE EventInterests SET status = 'approved' WHERE id = ?`, [
+      req.params.interestId,
+    ]);
+
+    res.json({ message: "Interest approved and attendee registered" });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/:id/interests/:interestId/reject", async (req, res, next) => {
+  try {
+    await run(`UPDATE EventInterests SET status = 'rejected' WHERE id = ?`, [
+      req.params.interestId,
+    ]);
+    res.json({ message: "Interest rejected" });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
