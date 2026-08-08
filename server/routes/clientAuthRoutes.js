@@ -90,13 +90,71 @@ router.post("/login", async (req, res, next) => {
 router.get("/me", clientAuthMiddleware, async (req, res, next) => {
   try {
     const client = await get(
-      "SELECT id, name, email FROM Clients WHERE id = ?",
+      "SELECT id, name, email, phoneNumber FROM Clients WHERE id = ?",
       [req.clientId],
     );
     if (!client) {
       return res.status(404).json({ error: "Client not found" });
     }
     res.json(client);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/update-profile", clientAuthMiddleware, async (req, res, next) => {
+  try {
+    const { name, phoneNumber } = req.body;
+
+    if (!name?.trim() || !phoneNumber?.trim()) {
+      return res
+        .status(400)
+        .json({ error: "Name and phone number are required" });
+    }
+
+    await run("UPDATE Clients SET name = ?, phoneNumber = ? WHERE id = ?", [
+      name,
+      phoneNumber,
+      req.clientId,
+    ]);
+
+    const client = await get("SELECT * FROM Clients WHERE id = ?", [
+      req.clientId,
+    ]);
+    await run(
+      "UPDATE Attendees SET name = ?, phoneNumber = ? WHERE email = ?",
+      [name, phoneNumber, client.email],
+    );
+
+    res.json({ message: "Profile updated" });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/change-password", clientAuthMiddleware, async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const client = await get("SELECT * FROM Clients WHERE id = ?", [
+      req.clientId,
+    ]);
+    if (!client) {
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, client.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await run("UPDATE Clients SET password = ? WHERE id = ?", [
+      hashedPassword,
+      req.clientId,
+    ]);
+
+    res.json({ message: "Password updated successfully" });
   } catch (error) {
     next(error);
   }

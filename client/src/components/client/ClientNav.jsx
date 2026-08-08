@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { Calendar, Heart, LogOut } from "lucide-react";
+import { Calendar, Heart, LogOut, User } from "lucide-react";
 import "./ClientNav.css";
 
 function ClientNav() {
@@ -25,6 +25,11 @@ function ClientNav() {
         {isLoggedIn && (
           <NavLink to="/client/my-interests" className="client-nav-link">
             <Heart size={16} /> My Interests
+          </NavLink>
+        )}
+        {isLoggedIn && (
+          <NavLink to="/client/profile" className="client-nav-link">
+            <User size={16} /> Account
           </NavLink>
         )}
       </div>
