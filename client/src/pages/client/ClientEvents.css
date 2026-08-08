@@ -208,3 +208,95 @@
   font-size: 13px;
   margin-bottom: 12px;
 }
+
+.client-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.client-interest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.client-interest-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  text-decoration: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.15s ease;
+}
+
+.client-interest-row:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.client-interest-thumb {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.client-interest-thumb-placeholder {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fef3ec, #fdf0f5);
+  color: #f97316;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.client-interest-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.client-interest-info h3 {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  color: #1e1e2f;
+}
+
+.interest-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.interest-status.pending {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.interest-status.approved {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.interest-status.rejected {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+  .client-interest-row {
+    flex-wrap: wrap;
+  }
+}

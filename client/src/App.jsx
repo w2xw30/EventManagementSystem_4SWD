@@ -13,6 +13,7 @@ import ClientSignup from "./pages/client/ClientSignup";
 import ClientLogin from "./pages/client/ClientLogin";
 import ClientEventList from "./pages/client/ClientEventList";
 import ClientEventDetail from "./pages/client/ClientEventDetail";
+import ClientMyInterests from "./pages/client/ClientMyInterests";
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
         <Route path="/client/login" element={<ClientLogin />} />
         <Route path="/client/events" element={<ClientEventList />} />
         <Route path="/client/events/:id" element={<ClientEventDetail />} />
-
+        <Route path="/client/my-interests" element={<ClientMyInterests />} />
         <Route
           path="/*"
           element={
