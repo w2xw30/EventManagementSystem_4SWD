@@ -108,6 +108,10 @@ function ClientSignup() {
           <p className="client-auth-switch">
             Already have an account? <Link to="/client/login">Log in</Link>
           </p>
+
+          <p className="client-auth-switch">
+            Are you an organizer? <Link to="/login">Admin login</Link>
+          </p>
         </form>
       </div>
     </div>

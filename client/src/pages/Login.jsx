@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { User, Lock, Eye, EyeOff, Calendar } from "lucide-react";
 import api from "../api/axios";
 import "./Login.css";
@@ -82,6 +82,10 @@ function Login() {
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
           </button>
+          <p className="login-switch">
+            Looking for events?{" "}
+            <Link to="/client/login">Go to client login</Link>
+          </p>
         </form>
       </div>
     </div>
